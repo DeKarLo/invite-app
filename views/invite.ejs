@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Приглашение</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <main class="card">
+    <h1>Привет, <%= guest.name %>!</h1>
+
+    <p class="lead">
+      Приглашаем тебя на наше мероприятие 🎉<br/>
+      Дата и место можно захардкодить здесь или подставлять из ENV.
+    </p>
+
+    <div id="status" class="status">
+      <% if (guest.attending === true) { %>
+        Вы ответили: <strong>Приду ✅</strong>
+      <% } else if (guest.attending === false) { %>
+        Вы ответили: <strong>Не смогу ❌</strong>
+      <% } else { %>
+        Пожалуйста, подтвердите участие:
+      <% } %>
+    </div>
+
+    <div class="buttons">
+      <button id="btn-yes" class="btn yes" <%= guest.attending !== null ? 'disabled' : '' %>>✅ Приду</button>
+      <button id="btn-no" class="btn no" <%= guest.attending !== null ? 'disabled' : '' %>>❌ Не смогу</button>
+    </div>
+  </main>
+
+  <script>
+    (function(){
+      const name = encodeURIComponent("<%= guest.name %>")
+      const statusEl = document.getElementById('status')
+      const yesBtn = document.getElementById('btn-yes')
+      const noBtn = document.getElementById('btn-no')
+
+      function lockButtons() {
+        yesBtn.disabled = true
+        noBtn.disabled = true
+      }
+
+      async function send(attending) {
+        try {
+          const res = await fetch(`/api/respond/${name}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ attending })
+          })
+          if (!res.ok) {
+            const data = await res.json().catch(()=>({}))
+            throw new Error(data.error || 'Ошибка отправки ответа')
+          }
+          const data = await res.json()
+          statusEl.innerHTML = data.attending
+            ? 'Вы ответили: <strong>Приду ✅</strong>'
+            : 'Вы ответили: <strong>Не смогу ❌</strong>'
+          lockButtons()
+        } catch (e) {
+          alert(e.message || 'Ошибка сети')
+        }
+      }
+
+      if (yesBtn) yesBtn.addEventListener('click', () => send(true))
+      if (noBtn) noBtn.addEventListener('click', () => send(false))
+    })();
+  </script>
+</body>
+</html>
