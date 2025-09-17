@@ -8,26 +8,30 @@
 </head>
 <body>
   <main class="card">
-    <h1>Привет, <%= guest.name %>!</h1>
+
+    <h1>Привет, <%= guest.name %>! 👋</h1>
 
     <p class="lead">
-      Приглашаем тебя на наше мероприятие 🎉<br/>
-      Дата и место можно захардкодить здесь или подставлять из ENV.
+      Мы с ребятами хотим собраться в антикафе, просто пообщаться, поиграть и хорошо провести время вместе.<br/>
+      Это не мероприятие, а просто дружеская встреча нашей компании 😊<br/>
+      <br/>
+      Скажи, хочешь присоединиться?
     </p>
+
 
     <div id="status" class="status">
       <% if (guest.attending === true) { %>
-        Вы ответили: <strong>Приду ✅</strong>
+        Отлично, будем рады тебя видеть! 🎉
       <% } else if (guest.attending === false) { %>
-        Вы ответили: <strong>Не смогу ❌</strong>
+        Окей, если что — всегда зови, будем рады! 🙌
       <% } else { %>
-        Пожалуйста, подтвердите участие:
+        Просто отметь, хочешь ли присоединиться:
       <% } %>
     </div>
 
     <div class="buttons">
-      <button id="btn-yes" class="btn yes" <%= guest.attending !== null ? 'disabled' : '' %>>✅ Приду</button>
-      <button id="btn-no" class="btn no" <%= guest.attending !== null ? 'disabled' : '' %>>❌ Не смогу</button>
+      <button id="btn-yes" class="btn yes" <%= guest.attending !== null ? 'disabled' : '' %>>✅ Да, хочу!</button>
+      <button id="btn-no" class="btn no" <%= guest.attending !== null ? 'disabled' : '' %>>❌ Пока не смогу</button>
     </div>
   </main>
 
@@ -56,8 +60,8 @@
           }
           const data = await res.json()
           statusEl.innerHTML = data.attending
-            ? 'Вы ответили: <strong>Приду ✅</strong>'
-            : 'Вы ответили: <strong>Не смогу ❌</strong>'
+            ? 'Отлично, будем рады тебя видеть! 🎉'
+            : 'Окей, если что — всегда зови, будем рады! 🙌'
           lockButtons()
         } catch (e) {
           alert(e.message || 'Ошибка сети')
